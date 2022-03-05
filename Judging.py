@@ -18,7 +18,6 @@ Landmarkers = {'right_shoulder':[], 'left_shoulder':[],
 Voice = ['faster','slower','lower','higher','wider']
 
 def thread_func(*name):
-    # print(name)
     for i in range(len(name)):
         s = 'Voices/'+str(Voice[name[i]])+'.m4a'
         # print(s)
@@ -34,8 +33,6 @@ if __name__ == '__main__':
     max_height = list(np.float_(str(data[0][1]).split(',')))
     min_height = list(np.float_(str(data[0][2]).split(',')))
     joint_range = [max_height[i]-min_height[i] for i in range(8)]
-    # print(data[0][2])
-    
 
     cap = cv2.VideoCapture(0)#'Videos/video3.mov')
     detector = pm.PoseDetector()
@@ -96,7 +93,6 @@ if __name__ == '__main__':
 
         if cur_len>1 and pre_len!=cur_len and cur_len%4==0:
             voice_arr = []
-            # print(period, max_period)
             if max_period>(period*1.2):
                 voice_arr.append(0)                 # print('做快點!')
             elif max_period<(period*0.8):
@@ -104,10 +100,6 @@ if __name__ == '__main__':
 
             for i in range(8):
                 if i==0:
-                    # print(Landmarkers['right_shoulder'])
-                    # print('shoulder:\n',np.asanyarray(Landmarkers['right_shoulder'])[all_h_peaks[0]])
-                    # print(np.asanyarray(Landmarkers['right_shoulder'])[all_l_peaks[0]])
-                    # print(max_height[0],min_height[0])
                     if len(all_h_peaks[0])>0:
                         if Landmarkers['right_shoulder'][all_h_peaks[0][len(all_h_peaks[0])-1]] < (max_height[0]-joint_range[0]*0.1):
                             voice_arr.append(2)                 # print('手放低')
@@ -116,13 +108,7 @@ if __name__ == '__main__':
                             voice_arr.append(3)                 # print('手舉高')
                         
                 elif i==4:
-                    # print(Landmarkers['right_thigh'])
-                    # print('thigh:',np.asanyarray(Landmarkers['right_thigh'])[video_len-1-math.ceil(max_period):video_len-1])
-                    # print(min_height[4])
-                    
-                    # Landmarkers['right_thigh'][all_l_peaks[4][len(all_l_peaks[4])-1]]
                     if len(all_l_peaks[4])>0:
-                        # print(min(Landmarkers['right_thigh'][video_len-1-math.ceil(max_period):video_len-1]),min_height[4])
                         if min(Landmarkers['right_thigh'][video_len-1-math.ceil(max_period):video_len-1]) > (min_height[4]+joint_range[4]*0.2): 
                             voice_arr.append(4)                 # print('腳打開')
         
@@ -135,14 +121,3 @@ if __name__ == '__main__':
         cv2.waitKey(1)
 
     thr.join()
-
-    count=0
-    fig, ax = plt.subplots(2,4,sharex=True,sharey=True)
-    fig.suptitle("LandMark(Cos Angle)",fontsize=16)
-    for key in Landmarkers.keys():
-       x=np.arange(len(Landmarkers[key]))+1
-       y=Landmarkers[key]
-       ax[int(count/4)][int(count%4)].plot(x,y)
-       ax[int(count/4)][int(count%4)].set_title(key)
-       count+=1
-    fig.savefig('Judge.png')
